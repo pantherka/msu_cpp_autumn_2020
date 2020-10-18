@@ -3,11 +3,9 @@
 void TokenParser::Parse(const std::string &text) {
     std::string token;
     bool is_digit = true;
-    for (auto stage : start) {
-        stage(text);
-    }
+    RunHandlers(start, text);
     for (size_t i = 0; i < text.size(); ++i) {
-        if (std::isspace(text[i]) != 0) {
+        if (std::isspace(text[i])) {
             if (token.size() == static_cast<size_t>(0)) {
                 continue;
             }
@@ -16,7 +14,7 @@ void TokenParser::Parse(const std::string &text) {
             token.clear();
         }
         else {
-            if ('0' >= text[i] || text[i] >= '9') {
+            if (!std::isdigit(text[i])) {
                 is_digit = false;
             }
             token.push_back(text[i]);
@@ -25,25 +23,24 @@ void TokenParser::Parse(const std::string &text) {
     if (token.size() > static_cast<size_t>(0)) {
         TokenCall(token, is_digit);
     }
-    for (auto stage : end) {
-        stage(text);
-    }
+    RunHandlers(end, text);
 }
 void TokenParser::TokenCall(const std::string &token, bool is_digit) {
-    for (auto stage : any_token) {
-        stage(token);
-    }
+    RunHandlers(any_token, token);
     if (is_digit) {
-        for (auto stage : digit_token) {
-            stage(token);
-        }
+        RunHandlers(digit_token, token);
     }
     else {
-        for (auto stage : string_token) {
-            stage(token);
-        }
+        RunHandlers(string_token, token);
     }
 }
+
+void TokenParser::RunHandlers(const std::vector<HandlerFunc> &callback, const std::string &token) {
+    for (size_t i = 0; i < callback.size(); ++i) {
+        callback[i](token);
+    }
+}
+
 void TokenParser::SetStartCallback(HandlerFunc func) {
     start.push_back(func);
 }
@@ -60,6 +57,3 @@ void TokenParser::SetEndCallback(HandlerFunc func) {
     end.push_back(func);
 }
 
-/*TokenParser::~TokenParser() {
-    ;
-}*/

@@ -16,10 +16,10 @@ class TokenParser
         TokenParser() {;};
         void Parse(const std::string &text);
         void TokenCall(const std::string &token, bool is_digit);
+        void RunHandlers(const std::vector<HandlerFunc> &callback, const std::string &token);
         void SetStartCallback(HandlerFunc func);
         void SetAnyTokenCallback(HandlerFunc func);
         void SetDigitTokenCallback(HandlerFunc func);
         void SetStringTokenCallback(HandlerFunc func);
         void SetEndCallback(HandlerFunc func);
-        //~TokenParser();
 };
