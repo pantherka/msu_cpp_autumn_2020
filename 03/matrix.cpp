@@ -84,15 +84,56 @@ Matrix::~Matrix() {
     delete[] matrix;
 }
 
-Matrix operator+(const Matrix& first, const Matrix& second) {
-    if ((first.Rows() != second.Rows()) || (first.Columns() != second.Columns())) {
+Matrix Matrix::operator+(const Matrix& other) const {
+    if ((this->rows != other.rows) || (this->columns != other.columns)) {
         throw std::out_of_range("");
     }
-    Matrix answer(first.Rows(), first.Columns());
-    for (size_t i = 0; i < first.Rows(); ++i) {
-        for (size_t j = 0; j < first.Columns(); ++j) {
-            answer[i][j] = first[i][j] + second[i][j];
+    Matrix answer(other.rows, other.columns);
+    for (size_t i = 0; i < other.rows; ++i) {
+        for (size_t j = 0; j < other.columns; ++j) {
+            answer[i][j] = this->operator[](i)[j] + other[i][j];
         }
     } 
     return answer;
+}
+
+Matrix& Matrix::operator=(const Matrix& other) {
+    if (this == &other) {
+        return *this;
+    }
+    rows = other.rows;
+    columns = other.columns;
+
+    if (matrix) {
+        for (size_t i = 0; i < rows; ++i) {
+            delete[] matrix[i];
+        }
+        delete[] matrix;
+    }
+
+    matrix = new int*[rows];
+    for (size_t i = 0; i < rows; ++i) {
+        matrix[i] = new int[columns];
+        for (size_t j = 0; j < columns; ++j) {
+            matrix[i][j] = other.matrix[i][j];
+        }
+    }
+    return *this;
+}
+
+Matrix::Matrix(const Matrix& other) : rows(other.rows), columns(other.columns) {
+     if (matrix) {
+        for (size_t i = 0; i < rows; ++i) {
+            delete[] matrix[i];
+        }
+        delete[] matrix;
+    }
+
+    matrix = new int*[rows];
+    for (size_t i = 0; i < rows; ++i) {
+        matrix[i] = new int[columns];
+        for (size_t j = 0; j < columns; ++j) {
+            matrix[i][j] = other.matrix[i][j];
+        }
+    }
 }

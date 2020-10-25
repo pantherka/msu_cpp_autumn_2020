@@ -52,8 +52,9 @@ int main() {
     assert((m == mat) == false); // проверка (не)равенства матриц
     assert(m != mat);
     
-    Matrix m3 = mat + m;
+    Matrix m3 = m2;
     assert(m3 == m2); 
+    m3 = m3;
 
     std::cout << "All tests passed." << std::endl;
     return 0;
