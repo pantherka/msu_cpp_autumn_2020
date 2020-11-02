@@ -64,7 +64,6 @@ BigInt& BigInt::operator=(const BigInt& copied) {
 }
 
 BigInt::BigInt(BigInt&& other) : len(other.len), is_negative(other.is_negative) {
-    digits = new int[len];
     digits = other.digits;
     other.digits = nullptr;
     other.len = 0;
@@ -77,6 +76,9 @@ BigInt& BigInt::operator=(BigInt&& moved) {
     }
     len = std::move(moved.len);
     is_negative = std::move(moved.is_negative);
+    if (digits) {
+        delete[] digits;
+    }
     digits = moved.digits;
     moved.digits = nullptr;
     moved.len = 0;
@@ -133,7 +135,8 @@ bool BigInt::operator<(const BigInt& other) const {
     if (len != other.len) {
         return len < other.len;
     }
-    for (int i = static_cast<int>(len); i >= 0; --i) {
+    
+    for (int i = static_cast<int>(len) - 1; i >= 0; --i) {
         if (digits[i] != other.digits[i]) {
             return digits[i] < other.digits[i];
         }
@@ -215,28 +218,33 @@ BigInt BigInt::operator-(const BigInt& other) const {
     answer.len = std::max(len, other.len);
     answer.digits = new int[answer.len];
     int carry = 0;
-    bool flag = true;
-    for (size_t i = 0; i < other.len || carry != 0; ++i) {
+    size_t i = 0;
+    for (; i < other.len || carry != 0; ++i) {
         answer.digits[i] = digits[i] - carry - (i < other.len ? other.digits[i] : 0);
         carry = (answer.digits[i] < 0);
         if (carry != 0) {
             answer.digits[i] += BigInt::BASE;
         }
-        if (flag) {
-            if (answer.digits[i] == 0) {
-                answer.len--; // учёт ведущих нулей
-            }
-            else {
-                flag = false;
-            }
-        }
+    }
+    if (i >= answer.len) {
+        i = answer.len - 1;
+    }
+    for (; i > 0 && answer.digits[i] == 0; --i) {
+        answer.len--;
+    }
+    if (answer.digits[0] == 0) {
+        answer.len--;
     }
     return answer;
 }
 
 BigInt BigInt::operator*(const BigInt& other) const {
     BigInt answer;
-    answer.digits = new int[len + other.len];
+    answer.len = len + other.len;
+    answer.digits = new int[answer.len];
+    for (size_t i = 0; i < answer.len; ++i) {
+        answer.digits[i] = 0;
+    }
     answer.len = 0;
     size_t real_len = 0;
     for (size_t i = 0; i < len; ++i) {
@@ -246,12 +254,12 @@ BigInt BigInt::operator*(const BigInt& other) const {
                             digits[i] * (j < other.len ? other.digits[j] : 0) + carry;
             answer.digits[i + j] = cur % BigInt::BASE;
             carry = cur / BigInt::BASE;
-            if (i + j > real_len) {
-                real_len = i + j; // подсчёт реальной длины числа
+            if (i + j + 1 > real_len) {
+                real_len = i + j + 1; // подсчёт реальной длины числа
             }
         }
     }
-    answer.len = real_len + 1;
+    answer.len = real_len;
     answer.is_negative = (is_negative != other.is_negative);
     return answer;
 }

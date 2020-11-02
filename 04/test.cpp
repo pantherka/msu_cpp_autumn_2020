@@ -12,7 +12,10 @@ int main() {
     assert(b - b == 0);
     assert(b + (-b) == 0);
     a = d + b;
-    assert(a == b * 2 + 2);
+    BigInt g = b * 2 + 2;
+    assert(g == a);
+    assert(BigInt(0) * 10 == 0);
+    assert(BigInt(55) * BigInt(55) == 3025);
     assert(BigInt(0) == 0);
     assert(BigInt("0") == BigInt(0));
     assert(BigInt(-55) == BigInt("-55")); // корректность определения через число и строку
