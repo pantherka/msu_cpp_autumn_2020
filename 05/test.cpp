@@ -60,12 +60,18 @@ int main()
     assert(x.b == y.b);
     assert(x.c == y.c);
 
+    std::stringstream stream1;
+    Serializer serializer1(stream1);
+    Deserializer deserializer1(stream1);
+
+
     FakeData y1 {1, 2, 3};
-    serializer.save(x);
+    serializer1.save(x);
     
-    const Error err1 = deserializer.load(y1);
+    const Error err1 = deserializer1.load(y1);
     assert(err1 == Error::CorruptedArchive);
 
+    deserializer1.load(y1);
     std::cout << "All tests passed." << std::endl;
     return 0;
 }

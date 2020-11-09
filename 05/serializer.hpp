@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <cctype>
+#include <string>
 
 enum class Error
 {
@@ -24,7 +25,7 @@ public:
         return object.serialize(*this);
     }
 
-    Error process(bool& elem) 
+    Error process(bool elem) 
     {
         if (!elem)
         {
@@ -37,7 +38,7 @@ public:
         return Error::NoError;
     }
 
-    Error process(uint64_t& elem) 
+    Error process(uint64_t elem) 
     {
         out_ << elem;
         return Error::NoError;
@@ -96,22 +97,17 @@ public:
     {
         std::string text;
         in_ >> text;
-        if (text.length() == 0)
+        size_t answer = 0;
+        try 
+        {
+            answer = std::stoull(text);
+            value = answer;
+            return Error::NoError;
+        }
+        catch (const std::logic_error& e)
         {
             return Error::CorruptedArchive;
         }
-        size_t answer = 0;
-        for (size_t i = 0; i < text.length(); ++i)
-        {
-            if (!std::isdigit(text[i]))
-            {
-                return Error::CorruptedArchive;
-            }
-            answer *= 10;
-            answer += (text[i] - '0');
-        }
-        value = answer;
-        return Error::NoError;
     }
 
     template <class T, class... Args>
