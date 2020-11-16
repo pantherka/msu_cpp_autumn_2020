@@ -14,7 +14,7 @@ struct StringError : public std::exception // некорректное испо�
 };
 
 template <typename T, typename ... Args>
-void process(std::stringstream& out, size_t n, T&& elem)
+void process(std::stringstream& out, size_t n, const T& elem)
 {
     if (n != 0)
     {
@@ -24,7 +24,7 @@ void process(std::stringstream& out, size_t n, T&& elem)
 }
 
 template <typename T, typename ... Args>
-void process(std::stringstream& out, size_t n, T&& elem, Args&&... args)
+void process(std::stringstream& out, size_t n, const T& elem, const Args&... args)
 {
     if (n == 0)
     {
@@ -35,7 +35,7 @@ void process(std::stringstream& out, size_t n, T&& elem, Args&&... args)
 }
 
 template <typename ... Args>
-std::string format(std::string&& buf, Args&&... args) 
+std::string format(const std::string& buf, const Args&... args)
 {
     std::stringstream out;
     size_t prev = 0;

@@ -4,6 +4,9 @@
 
 int main()
 {
+    const std::string p = "{1}+{1} = {0}";
+    std::cout << format(p, 2, "one") << std::endl;
+    std::cout << format(p, 1, "two") << std::endl;
     size_t error_count = 0;
     auto text = format("{1}+{1} = {0}", 2, "one");
     assert(text == "one+one = 2");
